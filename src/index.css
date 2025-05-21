@@ -1,0 +1,165 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7e22ce;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9333ea;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #7e22ce #1e1e1e;
+}
+
+body {
+  overflow-x: hidden;
+  overscroll-behavior: auto;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 260 84% 63%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 260 60% 40%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 240 5.9% 10%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 195 84% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 5.9% 45%;
+    --input: 240 5.9% 45%;
+    --ring: 240 5.9% 45%;
+
+    --radius: 0.5rem;
+    
+    --x-position: 50%;
+    --y-position: 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    height: 100%;
+  }
+
+  body {
+    @apply bg-dark text-white font-sans;
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-purple-primary to-blue-accent bg-clip-text text-transparent;
+  }
+
+  /* 3D Scroll Effects */
+  .perspective-container {
+    perspective: 1000px;
+    perspective-origin: var(--x-position) var(--y-position);
+    transform-style: preserve-3d;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+
+  .section-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+  }
+
+  .scroll-3d-section {
+    will-change: transform;
+  }
+
+  .portfolio-container {
+    perspective: 1000px;
+  }
+
+  .portfolio-item {
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+  }
+
+  .portfolio-item:hover {
+    transform: translateZ(20px);
+  }
+
+  .hero-text {
+    text-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  }
+  
+  .background-animate {
+    background-size: 400%;
+    -webkit-animation: gradient 15s ease infinite;
+    -moz-animation: gradient 15s ease infinite;
+    animation: gradient 15s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Parallax Element */
+  .parallax-element {
+    will-change: transform;
+  }
+}
