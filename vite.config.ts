@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   optimizeDeps: {
-    include: ["framer-motion"],
+    include: ["framer-motion, motion/react"],
   },
   server: {
     host: "::",
