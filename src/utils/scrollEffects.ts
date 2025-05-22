@@ -2,29 +2,43 @@ import anime from "animejs";
 
 export const initializeParallaxEffect = () => {
   const elements = document.querySelectorAll(".parallax-element");
-
-  // Optimized scroll handler with requestAnimationFrame
   let lastScrollY = window.scrollY;
   let ticking = false;
+  let lastTime = 0;
+  const debounceTime = 16; // ~60fps
 
-  const updateElements = () => {
+  const updateElements = (timestamp: number) => {
+    // Debounce to prevent jank
+    if (timestamp - lastTime < debounceTime) {
+      ticking = false;
+      return;
+    }
+    lastTime = timestamp;
+
     const scrollTop = lastScrollY;
+    const windowHeight = window.innerHeight;
 
     elements.forEach((element) => {
-      // Skip elements with parallax disabled
-      // Skip disabled elements except HeroSection
-      if (
-        element.getAttribute("data-parallax-disabled") === "true" &&
-        !element.id.includes("home")
-      ) {
+      if (element.getAttribute("data-parallax-disabled") === "true") {
         return;
       }
 
-      const speed = element.getAttribute("data-speed") || "0.1";
-      const yPos = -(scrollTop * Number(speed));
+      const rect = element.getBoundingClientRect();
+      const elementTop = rect.top + scrollTop;
+      const speed = parseFloat(element.getAttribute("data-speed") || "0.1");
+      const mobileSpeed = parseFloat(
+        element.getAttribute("data-mobile-speed") || speed.toString()
+      );
+      const isMobile = window.innerWidth <= 768;
+      const actualSpeed = isMobile ? mobileSpeed : speed;
 
-      // Apply transform directly for better performance
-      (element as HTMLElement).style.transform = `translate3d(0, ${yPos}px, 0)`;
+      // Only animate elements in or near viewport
+      if (rect.top < windowHeight * 1.5 && rect.bottom > -windowHeight * 0.5) {
+        const yPos = -(scrollTop - elementTop) * actualSpeed;
+        (
+          element as HTMLElement
+        ).style.transform = `translate3d(0, ${yPos}px, 0)`;
+      }
     });
 
     ticking = false;
@@ -39,15 +53,15 @@ export const initializeParallaxEffect = () => {
     }
   };
 
-  // Initialize will-change property
+  // Initialize elements
   elements.forEach((element) => {
     (element as HTMLElement).style.willChange = "transform";
+    (element as HTMLElement).style.backfaceVisibility = "hidden";
+    (element as HTMLElement).style.transformStyle = "preserve-3d";
   });
 
   window.addEventListener("scroll", handleScroll, { passive: true });
-
-  // Initial update
-  updateElements();
+  updateElements(performance.now());
 
   return () => {
     window.removeEventListener("scroll", handleScroll);
@@ -56,58 +70,68 @@ export const initializeParallaxEffect = () => {
 
 export const create3DScrollEffect = () => {
   const sections = document.querySelectorAll(".scroll-3d-section");
+  let lastScrollY = window.scrollY;
+  let ticking = false;
 
-  window.addEventListener("scroll", () => {
-    const scrollTop = window.scrollY;
+  const updateSections = () => {
+    const scrollTop = lastScrollY;
+    const windowHeight = window.innerHeight;
 
     sections.forEach((section) => {
       const sectionTop = (section as HTMLElement).offsetTop;
       const distance = scrollTop - sectionTop;
-      const speed = section.getAttribute("data-speed") || "0.1";
+      const speed = parseFloat(section.getAttribute("data-speed") || "0.1");
 
-      if (Math.abs(distance) < window.innerHeight) {
-        const rotateX = distance * Number(speed) * 0.05;
+      // Only animate sections in or near viewport
+      if (Math.abs(distance) < windowHeight * 1.5) {
+        const rotateX = distance * speed * 0.05;
         const translateZ = Math.abs(distance) * -0.1;
-        const opacity = 1 - Math.abs(distance) / (window.innerHeight * 0.8);
+        const opacityVal = Math.max(
+          0.4,
+          Math.min(1, 1 - Math.abs(distance) / (windowHeight * 0.8))
+        );
 
-        anime({
-          targets: section,
-          rotateX: `${rotateX}deg`,
-          translateZ: `${translateZ}px`,
-          opacity: Math.max(0.4, Math.min(1, opacity)),
-          duration: 0,
-          easing: "linear",
-        });
+        (section as HTMLElement).style.transform = `
+          rotateX(${rotateX}deg)
+          translateZ(${translateZ}px)
+        `;
+        (section as HTMLElement).style.opacity = opacityVal.toString();
       }
     });
-  });
+
+    ticking = false;
+  };
+
+  const handleScroll = () => {
+    lastScrollY = window.scrollY;
+
+    if (!ticking) {
+      window.requestAnimationFrame(updateSections);
+      ticking = true;
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  updateSections();
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
 };
 
 export const initialize3DScrollScene = () => {
-  // Skip initialization if SkillsParallax is present
-  if (document.querySelector(".skills-parallax-container")) {
-    return;
-  }
+  // Initialize both effects with proper cleanup
+  const cleanupParallax = initializeParallaxEffect();
+  const cleanup3D = create3DScrollEffect();
 
-  // Fix: Convert NodeList to array before passing to anime.js
-  const convertNodeListToArray = (nodeList: NodeList): HTMLElement[] => {
-    return Array.from(nodeList) as HTMLElement[];
+  // Set up perspective for 3D effects
+  document.body.style.perspective = "1000px";
+  document.body.style.perspectiveOrigin = "50% 50%";
+
+  return () => {
+    cleanupParallax();
+    cleanup3D();
+    document.body.style.perspective = "";
+    document.body.style.perspectiveOrigin = "";
   };
-
-  // Create 3D space for sections
-  const sections = document.querySelectorAll(
-    ".section-3d:not(.skills-parallax-container)"
-  );
-  if (sections.length > 0) {
-    anime({
-      targets: convertNodeListToArray(sections),
-      perspective: "1000px",
-      duration: 0,
-    });
-
-    create3DScrollEffect();
-  }
-
-  // Initialize parallax effect only for non-SkillsParallax elements
-  initializeParallaxEffect();
 };

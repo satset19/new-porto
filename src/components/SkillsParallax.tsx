@@ -18,7 +18,11 @@ const SkillsParallax: React.FC<SkillsParallaxProps> = memo(({ products }) => {
   const thirdRow = products.slice(10, 15);
 
   return (
-    <div className="skills-parallax-container relative flex flex-col antialiased py-16 h-full">
+    <div
+      className="skills-parallax-container parallax-element relative flex flex-col antialiased py-16 h-full"
+      data-speed="0.03"
+      data-mobile-speed="0.01"
+    >
       <Header />
       <div className="space-y-20">
         <div className="flex flex-wrap justify-center gap-10 max-md:gap-5">
@@ -58,8 +62,14 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = memo(({ product }) => {
   return (
     <motion.div
-      // whileHover={{ y: -20 }}
-      className="group/product relative h-72 w-[25rem] max-md:h-40 max-md:w-[8rem]"
+      className="group/product parallax-element relative h-72 w-[25rem] max-md:h-40 max-md:w-[8rem]"
+      data-speed="0.05"
+      data-mobile-speed="0.02"
+      style={{
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        transformStyle: "preserve-3d",
+      }}
     >
       <a
         href={product.link}
