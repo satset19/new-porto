@@ -10,6 +10,9 @@ import { initializeParallaxEffect } from "@/utils/scrollEffects";
 
 const Index = () => {
   useEffect(() => {
+    // Reset scroll behavior
+    document.documentElement.style.scrollBehavior = "auto";
+
     // Initialize page animations
     anime({
       targets: "body",
@@ -39,18 +42,19 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="snap-y snap-mandatory h-screen overflow-y-auto overflow-x-hidden">
+    <main className="overflow-x-hidden">
       <Navbar />
       <div
         id="home"
-        className="parallax-element snap-start min-h-screen z-10"
+        className="parallax-element min-h-screen z-10"
         data-speed="0.02"
+        data-parallax-disabled="false"
       >
         <HeroSection />
       </div>
       <div
         id="skills"
-        className="parallax-element snap-start min-h-screen py-16 z-30"
+        className="parallax-element min-h-screen py-16 z-30"
         data-speed="0.01"
         data-mobile-speed="0"
       >
@@ -58,13 +62,13 @@ const Index = () => {
       </div>
       <div
         id="projects"
-        className="parallax-element snap-start min-h-screen py-16 z-20"
+        className="parallax-element min-h-screen py-16 z-20"
         data-speed="0.015"
         data-mobile-speed="0"
       >
         <ProjectsSection />
       </div>
-      <div id="contact" className="snap-start z-40">
+      <div id="contact" className="z-40">
         <ContactSection />
         <Footer />
       </div>

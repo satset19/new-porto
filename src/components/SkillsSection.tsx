@@ -94,8 +94,17 @@ const skills = [
 ];
 
 const SkillsSection: React.FC = () => {
+  React.useEffect(() => {
+    // Prevent scroll restoration
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
   return (
-    <section className="relative py-20 flex items-center justify-center px-4 sm:px-6 my-10 sm:my-20 z-10">
+    <section
+      className="relative py-20 flex items-center justify-center px-4 sm:px-6 my-10 sm:my-20 z-10"
+      data-parallax-disabled="true"
+    >
       <div className="w-full mt-10">
         <SkillsParallax products={skills} />
       </div>

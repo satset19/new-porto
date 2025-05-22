@@ -11,6 +11,15 @@ export const initializeParallaxEffect = () => {
     const scrollTop = lastScrollY;
 
     elements.forEach((element) => {
+      // Skip elements with parallax disabled
+      // Skip disabled elements except HeroSection
+      if (
+        element.getAttribute("data-parallax-disabled") === "true" &&
+        !element.id.includes("home")
+      ) {
+        return;
+      }
+
       const speed = element.getAttribute("data-speed") || "0.1";
       const yPos = -(scrollTop * Number(speed));
 
